@@ -1,53 +1,99 @@
 
-import { Request,Response,NextFunction} from "express"
+
 import { checkSchema } from "express-validator"
 import { validate } from "../utils/validation"
 import userService from "../services/users.service"
-export const loginValidator = (req:Request,res:Response,next:NextFunction) =>{
-  const {email,password}= req.body
-  if(!email || !password){
-    res.status(400).json({
-      error:"Missing email or password"
-    })
-  }
-  next()
 
-}
+import { userMessage } from "../constants/message"
+import databaseService from "../services/database.service"
+export const loginValidator = validate(checkSchema({
+  email:{
+    notEmpty:{
+      errorMessage:userMessage.EMAIL_INVALID
+    },
+    isEmail:true,
+    trim:true,
+    isString:true,
+    custom:{
+      options:async(value,{req})=>{
+        const user = await databaseService.users.findOne({email:value})
+        if(user === null){
+          throw new Error(userMessage.USER_NOT_FOUND)
+        }
+        req.user = user
+        // gán user vào req.user để sử dụng trong controller 
+        return true
+      }
+    },
+
+  },
+  password:{
+    notEmpty:{
+      errorMessage:userMessage.PASSWORD_IS_REQUIRED},
+    isLength:{
+      options:{
+        min:6,
+        max:30
+      },
+      errorMessage:userMessage.PASSWORD_LENGTH
+    },
+    trim:true,
+    isStrongPassword:{
+      options:{
+        minLength:6,
+        minSymbols:1,
+        minUppercase:1,
+        minNumbers:1
+      },
+      errorMessage:userMessage.PASSWORD_MUST_BE_STRONG
+    }
+  },
+}))
 export const RegisterValidator = validate(checkSchema({
   name:{
-    notEmpty:true,
+    notEmpty:{
+      errorMessage:userMessage.NAME_IS_REQUIRED
+    },
+    isString:{
+      errorMessage:userMessage.NAME_MUST_BE_STRING
+    },
     isLength:{
       options:{
         min:2,
         max:30
-      }
+      },
+      errorMessage:userMessage.NAME_LENGTH
     },
     trim:true,
     errorMessage:"vui lòng điền name"
   },
   email:{
-    notEmpty:true,
+    notEmpty:{
+      errorMessage:userMessage.EMAIL_INVALID
+    },
     isEmail:true,
     trim:true,
     isString:true,
     custom:{
       options:async(value)=>{
-        const result = await userService.checkEmail(value)
+        const result = await userService.checkEmailExit(value)
         if(result){
-          throw new Error("đã tồn tại email")
+          throw new Error(userMessage.EMAIL_ALREADY_EXISTS)
         }
-        return result
+        return true
       }
     },
-    errorMessage:"email không đúng định dạng"
+
   },
   password:{
-    notEmpty:true,
+    notEmpty:{
+      errorMessage:userMessage.PASSWORD_IS_REQUIRED},
     isLength:{
       options:{
         min:6,
         max:30
-      }
+      },
+      errorMessage:userMessage.PASSWORD_LENGTH
     },
     trim:true,
     isStrongPassword:{
@@ -56,16 +102,19 @@ export const RegisterValidator = validate(checkSchema({
         minSymbols:1,
         minUppercase:1,
         minNumbers:1
-      }
+      },
+      errorMessage:userMessage.PASSWORD_MUST_BE_STRONG
     }
   },
   confirm_password:{
-    notEmpty:true,
+    notEmpty:{
+      errorMessage:userMessage.CONFIRM_PASSWORD_IS_REQUIRED},
     isLength:{
       options:{
         min:6,
         max:30
-      }
+      },
+      errorMessage:userMessage.CONFIRM_PASSWORD_LENGTH
     },
     trim:true,
     isStrongPassword:{
@@ -74,12 +123,13 @@ export const RegisterValidator = validate(checkSchema({
         minSymbols:1,
         minUppercase:1,
         minNumbers:1
-      }
+      },
+      errorMessage:userMessage.CONFIRM_PASSWORD_MUST_BE_STRONG
     },
     custom:{
       options:(value,{req})=>{
-        if(value != req.body.password){
-          throw new Error("Password confirm không khớp")
+        if(value !== req.body.password){
+          throw new Error(userMessage.CONFIRM_PASSWORD_NOT_MATCH)
         }
         return true
       }
@@ -90,7 +140,8 @@ export const RegisterValidator = validate(checkSchema({
       options:{
         strict:true,
         strictSeparator:true
-      }
+      },
+      errorMessage:userMessage.DATE_OF_BIRTH_IS_ISO8601
     }
   }
 

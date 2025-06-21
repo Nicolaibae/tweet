@@ -32,6 +32,12 @@ class UserService{
       }
     })
   }
+  private signAccessAndRefreshToken(user_id:string){
+    return Promise.all([
+      this.SignAccessToken(user_id),
+      this.SignRefrehToken(user_id)
+    ])
+  }
   async register(payload:registerBody){
     const result = await databaseService.users.insertOne(
       new User ({
@@ -42,20 +48,20 @@ class UserService{
       })
     )
     const userid = result.insertedId.toString()
-      const [access_token,refresh_token]= await Promise.all([
-        this.SignAccessToken(userid),
-        this.SignRefrehToken(userid)
-      ])
+      const [access_token,refresh_token]= await this.signAccessAndRefreshToken(userid)
     return {
       access_token,
       refresh_token
     }
 
   }
-  async checkEmail(email: string){
+  async checkEmailExit(email: string){
     const user = await databaseService.users.findOne({email})
     return Boolean(user)
 
+  }
+  async login(user_id:string){
+   
   }
 
 

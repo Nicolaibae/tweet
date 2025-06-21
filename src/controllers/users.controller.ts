@@ -4,7 +4,9 @@ import { ParamsDictionary } from "express-serve-static-core";
 import userService from "../services/users.service";
 
 export const loginController = (req:Request,res:Response)=>{
-  const {email,password} = req.body 
+  const user = req.user
+  const {user_id}= user
+
 
 }
 export const registerController = async(req:Request<ParamsDictionary, any, registerBody>,res:Response,next:NextFunction)=>{

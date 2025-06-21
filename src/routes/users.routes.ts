@@ -6,6 +6,7 @@ import {  wrapRequestHandler } from "../utils/handler";
 
 const usersRouter = Router()
 usersRouter.post("/register",RegisterValidator,wrapRequestHandler(registerController))
+usersRouter.post("/login",wrapRequestHandler(registerController))
 
 
 export default usersRouter
