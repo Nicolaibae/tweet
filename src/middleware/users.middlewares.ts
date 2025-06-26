@@ -6,6 +6,7 @@ import userService from "../services/users.service"
 
 import { userMessage } from "../constants/message"
 import databaseService from "../services/database.service"
+import { hassPassword } from "../utils/bycrypt"
 export const loginValidator = validate(checkSchema({
   email:{
     notEmpty:{
@@ -16,9 +17,9 @@ export const loginValidator = validate(checkSchema({
     isString:true,
     custom:{
       options:async(value,{req})=>{
-        const user = await databaseService.users.findOne({email:value})
+        const user = await databaseService.users.findOne({email:value,password:hassPassword(req.body.password)})
         if(user === null){
-          throw new Error(userMessage.USER_NOT_FOUND)
+          throw new Error(userMessage.Email_OR_PASSWORD_INCORRECT)
         }
         req.user = user
         // gán user vào req.user để sử dụng trong controller 

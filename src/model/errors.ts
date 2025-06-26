@@ -5,6 +5,11 @@ export type ErrorsType = Record<string, {
   msg: string;
   [key: string]: any
 }>
+// ở record này có kiểu định dạng lỗi object vd như là {
+//   email: { msg: "Email is invalid" },
+//   password: { msg: "Password too short" }
+// }
+
 
 export class ErrorWithStatus {
   message: string
