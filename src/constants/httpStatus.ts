@@ -6,7 +6,9 @@ const httpStatus={
   moved_permanently:301,
   unprocessable_entity:422,
   not_found:404,
-  interval_server_error:500
+  interval_server_error:500,
+  UNAUTHORIZED:401,
+  FORBIDDEN:403,
 
 }as const
 export default httpStatus

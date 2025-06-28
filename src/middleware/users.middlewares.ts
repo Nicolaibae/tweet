@@ -6,7 +6,12 @@ import userService from "../services/users.service"
 
 import { userMessage } from "../constants/message"
 import databaseService from "../services/database.service"
-import { hassPassword } from "../utils/bycrypt"
+import { comparePassword } from "../utils/bycrypt"
+
+import { verifyToken } from "../utils/jwt"
+import { ErrorWithStatus } from "../model/errors"
+import httpStatus from "../constants/httpStatus"
+
 export const loginValidator = validate(checkSchema({
   email:{
     notEmpty:{
@@ -17,12 +22,18 @@ export const loginValidator = validate(checkSchema({
     isString:true,
     custom:{
       options:async(value,{req})=>{
-        const user = await databaseService.users.findOne({email:value,password:hassPassword(req.body.password)})
-        if(user === null){
+        console.log("value",value)
+        const user = await databaseService.users.findOne({email:value})
+        if(!user){
+          throw new Error(userMessage.Email_OR_PASSWORD_INCORRECT)
+        }
+        const comparePass = await comparePassword(req.body.password,user.password)
+        if(!comparePass){ 
           throw new Error(userMessage.Email_OR_PASSWORD_INCORRECT)
         }
         req.user = user
-        // gán user vào req.user để sử dụng trong controller 
+        // console.log("user",req.user)
+        // // gán user vào req.user để sử dụng trong controller 
         return true
       }
     },
@@ -49,7 +60,7 @@ export const loginValidator = validate(checkSchema({
       errorMessage:userMessage.PASSWORD_MUST_BE_STRONG
     }
   },
-}))
+},["body"]))
 export const RegisterValidator = validate(checkSchema({
   name:{
     notEmpty:{
@@ -146,4 +157,22 @@ export const RegisterValidator = validate(checkSchema({
     }
   }
 
-}))
+},["body"]))
+export const accessTokenValidator = validate(checkSchema({
+  Authorization:{
+    notEmpty:{
+      errorMessage:userMessage.ACCESS_TOKEN_IS_REQUIRED
+    },
+    custom:{
+      options:async(value:string,{req})=>{
+        const access_token = value.split(" ")[1]
+        if(!access_token){
+          throw new ErrorWithStatus({message:userMessage.ACCESS_TOKEN_IS_REQUIRED,status:httpStatus.UNAUTHORIZED})
+        }
+        const decoded_authorization = await verifyToken(access_token)
+        req.decoded_authorization = decoded_authorization
+        return true
+
+      }
+  }
+}},["headers"]))

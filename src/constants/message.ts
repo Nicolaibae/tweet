@@ -18,4 +18,5 @@ export const userMessage = {
   DATE_OF_BIRTH_IS_ISO8601: "Date of birth must be a valid ISO 8601 date",
   LOGIN_SUCCESS: "Login success",
   REGISTER_SUCCESS: "Register success",
+  ACCESS_TOKEN_IS_REQUIRED: "Access token is required",
 } as const
