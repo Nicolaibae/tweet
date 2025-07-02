@@ -1,6 +1,7 @@
 
 import { config } from "dotenv"
 import jwt, { SignOptions } from "jsonwebtoken"
+import { Tokenpayload } from "../model/request/user.request"
 config()
 
 export const signToken = ({payload, privateKey = process.env.JWT_SECRET as string, options={algorithm:"HS256"}}:{
@@ -20,12 +21,12 @@ export const signToken = ({payload, privateKey = process.env.JWT_SECRET as strin
   })
 }
 export const verifyToken = (token:string, secretKey = process.env.JWT_SECRET as string) => {
-  return new Promise<jwt.JwtPayload>((resolve, reject) => {
+  return new Promise<Tokenpayload>((resolve, reject) => {
     jwt.verify(token, secretKey, (error, decoded) => {
       if(error){
         reject(error)
       }
-      resolve(decoded as jwt.JwtPayload)
+      resolve(decoded as Tokenpayload)
     })
   })
 

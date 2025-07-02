@@ -8,6 +8,7 @@ import { TokenType } from "../constants/enum"
 import { ObjectId } from "mongodb"
 import RefreshToken from "../model/schemas/RefreshToken.schema"
 import { config } from "dotenv"
+import { userMessage } from "../constants/message"
 config()
 class UserService{
   private SignAccessToken(user_id:string){
@@ -64,15 +65,23 @@ class UserService{
 
   }
   async login(user_id:string){
-    console.log(user_id)
-  //  const [access_token,refresh_token]= await this.signAccessAndRefreshToken(user_id)
-  //   await databaseService.refreshTokens.insertOne(
-  //     new RefreshToken({user_id: new ObjectId(user_id),token:refresh_token})
-  //   )
-  //   return {
-  //     access_token,
-  //     refresh_token
-  //   }
+    // console.log(user_id)
+   const [access_token,refresh_token]= await this.signAccessAndRefreshToken(user_id)
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({user_id: new ObjectId(user_id),token:refresh_token})
+    )
+    return {
+      access_token,
+      refresh_token
+    }
+  }
+  async logout(refresh_token:string){
+    const result = await databaseService.refreshTokens.deleteOne({token:refresh_token})
+    console.log("1",result)
+    // if(result.deletedCount === 0){
+    //   throw new Error("Refresh token not found")
+    // }
+    return userMessage.LOGOUT_SUCCESS
   }
 
 

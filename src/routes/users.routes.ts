@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { registerController } from "../controllers/users.controller";
-import { accessTokenValidator, loginValidator, RegisterValidator } from "../middleware/users.middlewares";
+import { loginController, logoutController, registerController } from "../controllers/users.controller";
+import { accessTokenValidator, loginValidator, refreshTokenValidator, RegisterValidator } from "../middleware/users.middlewares";
 import {  wrapRequestHandler } from "../utils/handler";
 
 
@@ -12,7 +12,7 @@ const usersRouter = Router()
  * response: {message:string,result:{access_token:string,refresh_token:string}}
  */
 
-usersRouter.post("/login",loginValidator,wrapRequestHandler(registerController))
+usersRouter.post("/login",loginValidator,wrapRequestHandler(loginController))
 /** 
  * register 
  * path: /api/v1/users/register
@@ -27,9 +27,7 @@ usersRouter.post("/register",RegisterValidator,wrapRequestHandler(registerContro
  * method: POST 
  * 
  */
-usersRouter.post("/logout",accessTokenValidator,wrapRequestHandler(async (req, res) => {
-  res.json({ message: "Logout success"})
-}))
+usersRouter.post("/logout",accessTokenValidator,refreshTokenValidator,wrapRequestHandler(logoutController))
 
 
 
