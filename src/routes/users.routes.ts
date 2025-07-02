@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { loginController, logoutController, registerController } from "../controllers/users.controller";
-import { accessTokenValidator, loginValidator, refreshTokenValidator, RegisterValidator } from "../middleware/users.middlewares";
+import { emailverifyValidator, loginController, logoutController, registerController } from "../controllers/users.controller";
+import { accessTokenValidator, EmailverifyTokenValidator, loginValidator, refreshTokenValidator, RegisterValidator } from "../middleware/users.middlewares";
 import {  wrapRequestHandler } from "../utils/handler";
 
 
@@ -28,6 +28,13 @@ usersRouter.post("/register",RegisterValidator,wrapRequestHandler(registerContro
  * 
  */
 usersRouter.post("/logout",accessTokenValidator,refreshTokenValidator,wrapRequestHandler(logoutController))
+/**
+  * verify-email when client click on the link in the email
+  * path: /api/v1/users/verify-email
+  * method: POST
+  * 
+ */
+usersRouter.post("/verify-email",EmailverifyTokenValidator,wrapRequestHandler(emailverifyValidator))
 
 
 

@@ -4,7 +4,7 @@ import jwt, { SignOptions } from "jsonwebtoken"
 import { Tokenpayload } from "../model/request/user.request"
 config()
 
-export const signToken = ({payload, privateKey = process.env.JWT_SECRET as string, options={algorithm:"HS256"}}:{
+export const signToken = ({payload, privateKey, options={algorithm:"HS256"}}:{
   payload:string| Buffer |object,
   privateKey?:string,
   options?: SignOptions
@@ -12,7 +12,7 @@ export const signToken = ({payload, privateKey = process.env.JWT_SECRET as strin
 
 }) => {
   return new Promise<string>((resolve, reject) => {
-    jwt.sign(payload, privateKey, options, (error, token) => {
+    jwt.sign(payload, privateKey!, options, (error, token) => {
       if(error){
         reject(error)
       }
@@ -20,7 +20,7 @@ export const signToken = ({payload, privateKey = process.env.JWT_SECRET as strin
     })
   })
 }
-export const verifyToken = (token:string, secretKey = process.env.JWT_SECRET as string) => {
+export const verifyToken = (token:string, secretKey: string) => {
   return new Promise<Tokenpayload>((resolve, reject) => {
     jwt.verify(token, secretKey, (error, decoded) => {
       if(error){

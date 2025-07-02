@@ -166,17 +166,14 @@ export const RegisterValidator = validate(checkSchema({
 }, ["body"]))
 export const accessTokenValidator = validate(checkSchema({
   Authorization: {
-    notEmpty: {
-      errorMessage: userMessage.ACCESS_TOKEN_IS_REQUIRED
-    },
     custom: {
       options: async (value: string, { req }) => {
-        const access_token = value.split(" ")[1]
+        const access_token = (value||"").split(" ")[1]
         if (!access_token) {
           throw new ErrorWithStatus({ message: userMessage.ACCESS_TOKEN_IS_REQUIRED, status: httpStatus.UNAUTHORIZED })
         }
         try {
-           const decoded_authorization = await verifyToken(access_token)
+           const decoded_authorization = await verifyToken(access_token, process.env.JWT_SECRET_ACCESS_TOKEN as string)
            ;(req as Request).decoded_authorization = decoded_authorization
         } catch (error) {
           throw new ErrorWithStatus({
@@ -191,14 +188,18 @@ export const accessTokenValidator = validate(checkSchema({
 }}, ["headers"]))
 export const refreshTokenValidator = validate(checkSchema({
   refresh_token: {
-    notEmpty: {
-      errorMessage: userMessage.REFRESH_TOKEN_IS_REQUIRED
-    },
+    trim: true,
     custom: {
       options: async (value: string, { req }) => {
+        if(!value) {
+          throw new ErrorWithStatus({
+            message: userMessage.REFRESH_TOKEN_IS_REQUIRED,
+            status: httpStatus.UNAUTHORIZED
+          })
+        }
         try {
           const [decoded_refresh_token, refresh_token] = await Promise.all([
-            verifyToken(value),
+            verifyToken(value, process.env.JWT_SECRET_REFRESH_TOKEN as string),
             databaseService.refreshTokens.findOne({ token: value })
           ])
           if (!refresh_token) {
@@ -217,6 +218,40 @@ export const refreshTokenValidator = validate(checkSchema({
           }
           throw error
         }
+
+        return true
+      }
+    }
+  }
+}, ["body"])
+)
+export const EmailverifyTokenValidator = validate(checkSchema({
+ email_verify_token: {
+   trim: true,
+    custom: {
+      options: async (value: string, { req }) => {
+        if (!value) {
+          throw new ErrorWithStatus({
+            message: userMessage.EMAIL_VERIFY_TOKEN_IS_REQUIRED,
+            status: httpStatus.UNAUTHORIZED
+          })
+        }
+        try {
+          const decoded_email_verify_token = await 
+            verifyToken(value, process.env.JWT_SECRET_EMAIL_VERIFI_TOKEN as string)
+            
+           ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
+        } catch (error) {
+           if (error instanceof JsonWebTokenError) {
+            throw new ErrorWithStatus({
+              message: error.message,
+              status: httpStatus.UNAUTHORIZED
+            })
+          }
+          throw error
+        }
+          
+       
 
         return true
       }
