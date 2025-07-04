@@ -1,6 +1,5 @@
 
 import databaseService from "./database.service"
-import { registerBody } from "../model/request/user.request"
 import User from "../model/schemas/User.schema"
 import { hassPassword } from "../utils/bycrypt"
 import { signToken } from "../utils/jwt"
@@ -9,7 +8,7 @@ import { ObjectId } from "mongodb"
 import RefreshToken from "../model/schemas/RefreshToken.schema"
 import { config } from "dotenv"
 import { userMessage } from "../constants/message"
-import { access } from "fs"
+import { registerReqBody } from "../model/request/user.request"
 config()
 class UserService{
   private SignAccessToken(user_id:string){
@@ -58,7 +57,7 @@ class UserService{
       this.SignRefrehToken(user_id)
     ])
   }
-  async register(payload:registerBody){
+  async register(payload:registerReqBody){
     const user_id = new ObjectId()
     const email_verify_token = await this.SignEmailVerifyToken(user_id.toString())
     await databaseService.users.insertOne(
@@ -74,7 +73,7 @@ class UserService{
     
       const [access_token,refresh_token]= await this.signAccessAndRefreshToken(user_id.toString())
       await databaseService.refreshTokens.insertOne(new RefreshToken({user_id: new ObjectId(user_id),token:refresh_token}))
-      console.log("email_verify_token",email_verify_token)
+      console.log("email_verify_token ở dòng register",email_verify_token)
     return {
       access_token,
       refresh_token
@@ -112,14 +111,33 @@ class UserService{
       {$set: {
         email_verify_token: "",
         verify: UserVerifyStatus.Verified,
-        updated_at: new Date()
-      }}
+        // updated_at: new Date()
+      },
+      $currentDate: {
+        updated_at: true
+      }
+    }
     )
     ])
      const [access_token,refresh_token] = token
     return {
       access_token,
       refresh_token
+    }
+  }
+  async resendVerifyEmail(user_id:string){
+    const email_verify_token = await this.SignEmailVerifyToken(user_id)
+    console.log("resend-email_verify_token",email_verify_token)
+    await databaseService.users.updateOne(
+      {_id: new ObjectId(user_id)},
+      [{$set: {
+        email_verify_token,
+        updated_at:"$$NOW"
+      },
+    }]
+    )
+    return {
+     message: userMessage.RESEND_VERIFY_EMAIL_SUCCESS,
     }
   }
 

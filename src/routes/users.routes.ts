@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { emailverifyValidator, loginController, logoutController, registerController } from "../controllers/users.controller";
+import { emailverifyController, emailverifyValidator, loginController, logoutController, registerController, resendVerifyEmailController } from "../controllers/users.controller";
 import { accessTokenValidator, EmailverifyTokenValidator, loginValidator, refreshTokenValidator, RegisterValidator } from "../middleware/users.middlewares";
 import {  wrapRequestHandler } from "../utils/handler";
 
@@ -34,7 +34,16 @@ usersRouter.post("/logout",accessTokenValidator,refreshTokenValidator,wrapReques
   * method: POST
   * 
  */
-usersRouter.post("/verify-email",EmailverifyTokenValidator,wrapRequestHandler(emailverifyValidator))
+usersRouter.post("/verify-email",EmailverifyTokenValidator,wrapRequestHandler(emailverifyController))
+/**
+  * resend verify email
+  * when user click on the resend verify email button
+  * path: /api/v1/users/resend-verify-email
+  * method: POST
+  * 
+ */
+usersRouter.post("/resend-verify-email",accessTokenValidator,wrapRequestHandler(resendVerifyEmailController))
+
 
 
 

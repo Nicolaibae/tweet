@@ -237,8 +237,7 @@ export const EmailverifyTokenValidator = validate(checkSchema({
           })
         }
         try {
-          const decoded_email_verify_token = await 
-            verifyToken(value, process.env.JWT_SECRET_EMAIL_VERIFI_TOKEN as string)
+          const decoded_email_verify_token = await verifyToken(value, process.env.JWT_SECRET_EMAIL_VERIFI_TOKEN as string)
             
            ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
         } catch (error) {
@@ -250,9 +249,6 @@ export const EmailverifyTokenValidator = validate(checkSchema({
           }
           throw error
         }
-          
-       
-
         return true
       }
     }
