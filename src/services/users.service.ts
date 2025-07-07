@@ -57,6 +57,18 @@ class UserService{
       this.SignRefrehToken(user_id)
     ])
   }
+  private signForgotPasswordToken(user_id:string){
+    return signToken({
+      payload:{
+        user_id,
+        token_type:TokenType.ForgotPasswordToken
+      },
+      privateKey:process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+      options:{
+        expiresIn: process.env.Forgot_Password_Token_Exp
+      }
+    })
+  }
   async register(payload:registerReqBody){
     const user_id = new ObjectId()
     const email_verify_token = await this.SignEmailVerifyToken(user_id.toString())
@@ -140,6 +152,21 @@ class UserService{
      message: userMessage.RESEND_VERIFY_EMAIL_SUCCESS,
     }
   }
+async forgotPassword(user_id:string){
+  const forgot_password_token = await this.signForgotPasswordToken(user_id)
+  await databaseService.users.updateOne(
+    {_id: new ObjectId(user_id)},
+    {$set: {
+      forgot_password_token,
+      updated_at: new Date()
+    }}
+  )
+  console.log("forgot_password_token",forgot_password_token)
+  return {
+    message: userMessage.FORGOT_PASSWORD_SUCCESS,
+    forgot_password_token
+  }
+}
 
 
 }

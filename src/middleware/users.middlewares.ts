@@ -12,7 +12,8 @@ import { verifyToken } from "../utils/jwt"
 import { ErrorWithStatus } from "../model/errors"
 import httpStatus from "../constants/httpStatus"
 import { JsonWebTokenError } from "jsonwebtoken"
-import { Request } from "express"
+import e, { Request } from "express"
+import { ObjectId } from "mongodb"
 
 
 export const loginValidator = validate(checkSchema({
@@ -255,3 +256,68 @@ export const EmailverifyTokenValidator = validate(checkSchema({
   }
 }, ["body"])
 )
+export const forgotPasswordValidator = validate(checkSchema({
+  
+    email: {
+    notEmpty: {
+      errorMessage: userMessage.EMAIL_INVALID
+    },
+    isEmail: true,
+    trim: true,
+    isString: true,
+    custom: {
+      options: async (value, { req }) => {
+        console.log("value", value)
+        const user = await databaseService.users.findOne({ email: value })
+        if (!user) {
+          throw new Error(userMessage.USER_NOT_FOUND)
+        }
+        req.user = user
+        
+        return true
+      }
+    },
+  }
+}, ["body"]))
+export const VerifyforgotPasswordValidator = validate(checkSchema({
+  forgot_password_token: {
+    trim: true,
+    custom: {
+      options: async (value: string, { req }) => {
+        if (!value) {
+          throw new ErrorWithStatus({
+            message: userMessage.FORGOT_PASSWORD_TOKEN_IS_REQUIRED,
+            status: httpStatus.UNAUTHORIZED
+          })
+        }
+        try {
+          const decoded_forgot_password_token = await verifyToken(value, process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string)
+          const { user_id } = decoded_forgot_password_token
+          const user = await databaseService.users.findOne({ _id: new ObjectId( user_id) })
+          if(user === null) {
+            throw new ErrorWithStatus({
+              message: userMessage.USER_NOT_FOUND,
+              status: httpStatus.not_found
+            })
+           
+          }
+           if(user.forgot_password_token !== value) {
+              throw new ErrorWithStatus({
+                message: userMessage.INVALID_FORGOT_PASSWORD_TOKEN,
+                status: httpStatus.UNAUTHORIZED
+              })
+            }
+        } catch (error) {
+          if (error instanceof JsonWebTokenError) {
+            throw new ErrorWithStatus({
+              message: error.message,
+              status: httpStatus.UNAUTHORIZED
+            })
+          }
+          throw error
+        }
+        return true
+      }
+    }
+  }
+  }, ["body"]),)

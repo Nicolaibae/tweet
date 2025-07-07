@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { emailverifyController, emailverifyValidator, loginController, logoutController, registerController, resendVerifyEmailController } from "../controllers/users.controller";
-import { accessTokenValidator, EmailverifyTokenValidator, loginValidator, refreshTokenValidator, RegisterValidator } from "../middleware/users.middlewares";
+import { emailverifyController, emailverifyValidator, forgotPasswordController, loginController, logoutController, registerController, resendVerifyEmailController, verifyForgotPasswordController } from "../controllers/users.controller";
+import { accessTokenValidator, EmailverifyTokenValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
 import {  wrapRequestHandler } from "../utils/handler";
 
 
@@ -30,7 +30,7 @@ usersRouter.post("/register",RegisterValidator,wrapRequestHandler(registerContro
 usersRouter.post("/logout",accessTokenValidator,refreshTokenValidator,wrapRequestHandler(logoutController))
 /**
   * verify-email when client click on the link in the email
-  * path: /api/v1/users/verify-email
+  * path: /api/users/verify-email
   * method: POST
   * 
  */
@@ -38,12 +38,25 @@ usersRouter.post("/verify-email",EmailverifyTokenValidator,wrapRequestHandler(em
 /**
   * resend verify email
   * when user click on the resend verify email button
-  * path: /api/v1/users/resend-verify-email
+  * path: /api/users/resend-verify-email
   * method: POST
   * 
  */
 usersRouter.post("/resend-verify-email",accessTokenValidator,wrapRequestHandler(resendVerifyEmailController))
-
+/**
+  * forgot password
+  * path: /api/users/forgot-password
+  * method: POST
+  * body: {email:string}
+ */
+usersRouter.post("/forgot-password",forgotPasswordValidator,wrapRequestHandler(forgotPasswordController))
+/**
+ *  verify forgot password
+ *  path: /api/users/verify-forgot-password
+ * method: POST
+ *  body: {email:string,forgot_password_token:string,password:string,confirm_password:string}
+ */
+usersRouter.post("/verify-forgot-password",VerifyforgotPasswordValidator,wrapRequestHandler(verifyForgotPasswordController))
 
 
 

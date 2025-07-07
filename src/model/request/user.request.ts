@@ -1,5 +1,6 @@
 import { JwtPayload } from "jsonwebtoken";
 import { TokenType } from "../../constants/enum";
+import e from "express";
 
 export interface registerReqBody{
   name:string,
@@ -23,3 +24,8 @@ export interface Tokenpayload extends JwtPayload{
 export interface VerifyEmailReqBody{
   email_verify_token:string
 }
+export interface forgotPasswordReqBody{
+  email:string  
+}
+export interface VerifyForgotPasswordReqBody{
+  forgot_password_token:string,}
