@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { emailverifyController, forgotPasswordController, GetMeController, loginController, logoutController, registerController, resendVerifyEmailController, resetPasswordController, verifyForgotPasswordController } from "../controllers/users.controller";
-import { accessTokenValidator, EmailverifyTokenValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
+import { emailverifyController, forgotPasswordController, GetMeController, loginController, logoutController, registerController, resendVerifyEmailController, resetPasswordController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
+import { accessTokenValidator, EmailverifyTokenValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, updateMeValidator, verifiedUserValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
 import { wrapRequestHandler } from "../utils/handler";
 
 
@@ -70,6 +70,13 @@ usersRouter.post("/reset-password", ResetPasswordValidator, wrapRequestHandler(r
  * method: GET
  */
 usersRouter.get("/me", accessTokenValidator, wrapRequestHandler(GetMeController))
+/**
+ * update user profile
+ * path: /api/users/me
+ * method: PATCH
+ * 
+ */
+usersRouter.patch("/me", accessTokenValidator,verifiedUserValidator,updateMeValidator, wrapRequestHandler(updatemeController))
 
 
 

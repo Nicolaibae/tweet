@@ -12,8 +12,10 @@ import { verifyToken } from "../utils/jwt"
 import { ErrorWithStatus } from "../model/errors"
 import httpStatus from "../constants/httpStatus"
 import { JsonWebTokenError } from "jsonwebtoken"
-import e, { Request } from "express"
+import { NextFunction, Request } from "express"
 import { ObjectId } from "mongodb"
+import { Tokenpayload } from "../model/request/user.request"
+import { UserVerifyStatus } from "../constants/enum"
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -108,6 +110,32 @@ const forgot_password_token_Schema: ParamSchema = {
     }
   }
 }
+const nameSchema : ParamSchema = {
+    notEmpty: {
+      errorMessage: userMessage.NAME_IS_REQUIRED
+    },
+    isString: {
+      errorMessage: userMessage.NAME_MUST_BE_STRING
+    },
+    isLength: {
+      options: {
+        min: 2,
+        max: 30
+      },
+      errorMessage: userMessage.NAME_LENGTH
+    },
+    trim: true,
+    errorMessage: "vui lòng điền name"
+  }
+  const date_of_birth_Schema: ParamSchema =  {
+    isISO8601: {
+      options: {
+        strict: true,
+        strictSeparator: true
+      },
+      errorMessage: userMessage.DATE_OF_BIRTH_IS_ISO8601
+    }
+  }
 export const loginValidator = validate(checkSchema({
   email: {
     notEmpty: {
@@ -324,10 +352,133 @@ export const forgotPasswordValidator = validate(checkSchema({
 }, ["body"]))
 export const VerifyforgotPasswordValidator = validate(checkSchema({
   forgot_password_token: forgot_password_token_Schema
-  
+
 }, ["body"]),)
 export const ResetPasswordValidator = validate(checkSchema({
   password: passwordSchema,
   confirm_password: confirm_password_Schema,
   forgot_password_token: forgot_password_token_Schema
 }))
+export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
+  const { verify } = req.decoded_authorization as Tokenpayload
+  if (verify !== UserVerifyStatus.Verified) {
+    return next(new ErrorWithStatus({
+      message: userMessage.USER_NOT_VERIFIED,
+      status: httpStatus.FORBIDDEN
+    })
+    )
+
+  }
+  next()
+}
+export const updateMeValidator = validate(checkSchema({
+  name: {
+    ...nameSchema,
+    optional: true,
+    notEmpty: undefined // nếu không có name thì không cần kiểm tra
+
+  },
+   date_of_birth: {
+    ...date_of_birth_Schema,
+    optional: true, // nếu không có date_of_birth thì không cần kiểm tra
+    notEmpty: undefined // nếu không có date_of_birth thì không cần kiểm tra
+   },
+   bio:{
+    
+    optional: true, // nếu không có bio thì không cần kiểm tra
+    isString:{
+      errorMessage: userMessage.BIO_MUST_BE_STRING 
+    },
+    trim: true,
+    isLength: {
+      options: {
+        min: 0, // không bắt buộc
+        max: 200
+      },
+      errorMessage: userMessage.BIO_LENGTH
+    }
+
+   },
+   location:{
+    
+    optional: true, // nếu không có bio thì không cần kiểm tra
+    isString:{
+      errorMessage: userMessage.LOCATION_MUST_BE_STRING 
+    },
+    trim: true,
+    isLength: {
+      options: {
+        min: 0, // không bắt buộc
+        max: 200
+      },
+      errorMessage: userMessage.LOCATION_LENGTH
+    }
+
+   },
+   webstie:{
+    
+    optional: true, // nếu không có bio thì không cần kiểm tra
+    isString:{
+      errorMessage: userMessage.WEBSITE_MUST_BE_STRING 
+    },
+    trim: true,
+    isLength: {
+      options: {
+        min: 0, // không bắt buộc
+        max: 200
+      },
+      errorMessage: userMessage.WEBSITE_LENGTH
+    }
+
+   },
+   username:{
+   
+    optional: true, // nếu không có bio thì không cần kiểm tra
+    isString:{
+      errorMessage: userMessage.USERNAME_MUST_BE_STRING 
+    },
+    trim: true,
+    isLength: {
+      options: {
+        min: 0, // không bắt buộc
+        max: 50
+      },
+      errorMessage: userMessage.USERNAME_LENGTH
+    }
+
+   },
+   avatar:{
+    
+    optional: true, // nếu không có bio thì không cần kiểm tra
+    isString:{
+      errorMessage: userMessage.AVATAR_MUST_BE_STRING 
+    },
+    trim: true,
+    isLength: {
+      options: {
+        min: 0, // không bắt buộc
+        max: 400
+      },
+      errorMessage: userMessage.AVATAR_LENGTH
+    }
+
+   },
+   cover_photo:{
+    
+    optional: true, // nếu không có bio thì không cần kiểm tra
+    isString:{
+      errorMessage: userMessage.USERNAME_MUST_BE_STRING 
+    },
+    trim: true,
+    isLength: {
+      options: {
+        min: 0, // không bắt buộc
+        max: 400
+      },
+      errorMessage: userMessage.USERNAME_LENGTH
+    }
+
+   }
+
+  
+}, ["body"]))

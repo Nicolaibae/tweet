@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { forgotPasswordReqBody, loginReqBody, logoutReqBody, registerReqBody, ResetPasswordReqBody, Tokenpayload, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
+import { forgotPasswordReqBody, loginReqBody, logoutReqBody, registerReqBody, ResetPasswordReqBody, Tokenpayload, updateMeReqBody, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
 import { ParamsDictionary } from "express-serve-static-core";
 import userService from "../services/users.service";
 import User from "../model/schemas/User.schema";
@@ -12,7 +12,7 @@ import { UserVerifyStatus } from "../constants/enum";
 export const loginController = async (req: Request<ParamsDictionary, any, loginReqBody>, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId
-  const result = await userService.login(user_id.toString())
+  const result = await userService.login({user_id:user_id.toString(),verify:user.verify})
   res.json({
     message: userMessage.LOGIN_SUCCESS,
     result
@@ -78,8 +78,8 @@ export const resendVerifyEmailController = async (req: Request, res: Response, n
 
 }
 export const forgotPasswordController = async (req: Request<ParamsDictionary, any, forgotPasswordReqBody>, res: Response, next: NextFunction) => {
-  const { _id } = req.user as User
- const result = await userService.forgotPassword((_id as ObjectId).toString())
+  const { _id,verify } = req.user as User
+ const result = await userService.forgotPassword({user_id:(_id as ObjectId).toString(),verify})
  return res.json(result)
 }
 export const verifyForgotPasswordController = async (req: Request<ParamsDictionary, any, VerifyForgotPasswordReqBody>, res: Response, next: NextFunction) => {
@@ -99,6 +99,15 @@ export const GetMeController = async (req: Request, res: Response, next: NextFun
   const user = await userService.getMe(user_id)
   return res.json({
     message: userMessage.GET_ME_SUCCESS,
+    result: user
+  })
+}
+export const updatemeController = async (req: Request<ParamsDictionary, any, updateMeReqBody>, res: Response, next: NextFunction) => {
+  const { user_id } = req.decoded_authorization as Tokenpayload
+  const body = req.body
+  const user = await userService.updateMe(user_id, body)
+  return res.json({
+    message: userMessage.UPDATE_ME_SUCCESS,
     result: user
   })
 }
