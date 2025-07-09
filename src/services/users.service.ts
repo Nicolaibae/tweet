@@ -167,8 +167,37 @@ async forgotPassword(user_id:string){
     forgot_password_token
   }
 }
-
-
+async resetPassword(user_id:string,password:string){
+  await databaseService.users.updateOne(
+    {_id: new ObjectId(user_id)},
+    {
+      $set: {
+        password: await hassPassword(password),
+        forgot_password_token: "",
+        updated_at: new Date()
+      }
+    }
+    
+  )
+  return {
+    message: userMessage.RESET_PASSWORD_SUCCESS
+  }
+}
+async getMe(user_id:string){
+  const user = await databaseService.users.findOne({_id: new ObjectId(user_id)},
+  {
+    projection:{
+      password:0,
+      email_verify_token:0,
+      forgot_password_token:0,
+    }
+  }
+)
+  if(!user) {
+    throw new Error(userMessage.USER_NOT_FOUND)
+  }
+  return user
+}
 }
 const userService = new UserService
 export default userService

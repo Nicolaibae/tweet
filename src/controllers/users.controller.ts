@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { forgotPasswordReqBody, loginReqBody, logoutReqBody, registerReqBody, Tokenpayload, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
+import { forgotPasswordReqBody, loginReqBody, logoutReqBody, registerReqBody, ResetPasswordReqBody, Tokenpayload, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
 import { ParamsDictionary } from "express-serve-static-core";
 import userService from "../services/users.service";
 import User from "../model/schemas/User.schema";
@@ -85,5 +85,20 @@ export const forgotPasswordController = async (req: Request<ParamsDictionary, an
 export const verifyForgotPasswordController = async (req: Request<ParamsDictionary, any, VerifyForgotPasswordReqBody>, res: Response, next: NextFunction) => {
   return res.json({
     message: userMessage.VERIFY_FORGOT_PASSWORD_SUCCESS  
+  })
+}
+export const resetPasswordController = async (req: Request<ParamsDictionary, any, ResetPasswordReqBody>, res: Response, next: NextFunction) => {
+  const {user_id} = req.decoded_forgot_password_token as Tokenpayload
+  const { password} = req.body
+ const result= await userService.resetPassword(user_id,password)
+ return res.json(result)
+
+}
+export const GetMeController = async (req: Request, res: Response, next: NextFunction) => {
+  const {user_id} = req.decoded_authorization as Tokenpayload
+  const user = await userService.getMe(user_id)
+  return res.json({
+    message: userMessage.GET_ME_SUCCESS,
+    result: user
   })
 }
