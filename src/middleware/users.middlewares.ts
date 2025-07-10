@@ -3,7 +3,6 @@
 import { checkSchema, ParamSchema } from "express-validator"
 import { validate } from "../utils/validation"
 import userService from "../services/users.service"
-
 import { userMessage } from "../constants/message"
 import databaseService from "../services/database.service"
 import { comparePassword } from "../utils/bycrypt"
@@ -12,7 +11,7 @@ import { verifyToken } from "../utils/jwt"
 import { ErrorWithStatus } from "../model/errors"
 import httpStatus from "../constants/httpStatus"
 import { JsonWebTokenError } from "jsonwebtoken"
-import { NextFunction, Request } from "express"
+import { NextFunction, Request,Response } from "express"
 import { ObjectId } from "mongodb"
 import { Tokenpayload } from "../model/request/user.request"
 import { UserVerifyStatus } from "../constants/enum"
@@ -482,3 +481,20 @@ export const updateMeValidator = validate(checkSchema({
 
   
 }, ["body"]))
+export const followValidator = validate(checkSchema({
+    followed_user_id: {
+      custom:{
+        options: async (value:string, { req }) => {
+          if(!ObjectId.isValid(value)){
+            throw new ErrorWithStatus({message:userMessage.INVALID_FOLLOWERD_USER_ID,status:httpStatus.not_found})
+          }
+          const followed_user = await databaseService.users.findOne({ _id: new ObjectId(value) })
+          if(followed_user === null) {
+            throw new ErrorWithStatus({message:userMessage.USER_NOT_FOUND,status:httpStatus.not_found})
+          }
+      
+        
+        }
+      }
+    }
+}))

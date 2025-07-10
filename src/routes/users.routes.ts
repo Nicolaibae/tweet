@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { emailverifyController, forgotPasswordController, GetMeController, loginController, logoutController, registerController, resendVerifyEmailController, resetPasswordController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
-import { accessTokenValidator, EmailverifyTokenValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, updateMeValidator, verifiedUserValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
+import { emailverifyController, followController, forgotPasswordController, GetMeController, getProfileController, loginController, logoutController, registerController, resendVerifyEmailController, resetPasswordController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
+import { accessTokenValidator, EmailverifyTokenValidator, followValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, updateMeValidator, verifiedUserValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
 import { wrapRequestHandler } from "../utils/handler";
+import { filterMiddleware } from "../middleware/common.middleware";
+import { updateMeReqBody } from "../model/request/user.request";
 
 
 const usersRouter = Router()
@@ -76,7 +78,24 @@ usersRouter.get("/me", accessTokenValidator, wrapRequestHandler(GetMeController)
  * method: PATCH
  * 
  */
-usersRouter.patch("/me", accessTokenValidator,verifiedUserValidator,updateMeValidator, wrapRequestHandler(updatemeController))
+usersRouter.patch("/me", accessTokenValidator,verifiedUserValidator,updateMeValidator,filterMiddleware<updateMeReqBody>(['name','date_of_birth','bio','website','location','avatar','username', 'cover_photo']), wrapRequestHandler(updatemeController))
+/**
+ * get user profile
+ *  path: /api/users/:username
+ * method: GET
+ * params: {username:string}
+ * 
+ */
+usersRouter.get("/:username",wrapRequestHandler(getProfileController))
+
+/**
+ * follow user
+ *  path: /api/users/follow
+ * method: POST
+ * 
+ * 
+ */
+usersRouter.post("/follow", accessTokenValidator,verifiedUserValidator,followValidator, wrapRequestHandler(followController))
 
 
 

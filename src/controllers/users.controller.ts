@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { forgotPasswordReqBody, loginReqBody, logoutReqBody, registerReqBody, ResetPasswordReqBody, Tokenpayload, updateMeReqBody, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
+import { followReqBody, forgotPasswordReqBody, getUserProfileReqParams, loginReqBody, logoutReqBody, registerReqBody, ResetPasswordReqBody, Tokenpayload, updateMeReqBody, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
 import { ParamsDictionary } from "express-serve-static-core";
 import userService from "../services/users.service";
 import User from "../model/schemas/User.schema";
@@ -8,6 +8,8 @@ import { userMessage } from "../constants/message";
 import databaseService from "../services/database.service";
 import httpStatus from "../constants/httpStatus";
 import { UserVerifyStatus } from "../constants/enum";
+
+
 
 export const loginController = async (req: Request<ParamsDictionary, any, loginReqBody>, res: Response) => {
   const user = req.user as User
@@ -104,10 +106,26 @@ export const GetMeController = async (req: Request, res: Response, next: NextFun
 }
 export const updatemeController = async (req: Request<ParamsDictionary, any, updateMeReqBody>, res: Response, next: NextFunction) => {
   const { user_id } = req.decoded_authorization as Tokenpayload
-  const body = req.body
-  const user = await userService.updateMe(user_id, body)
+  const user = await userService.updateMe(user_id, req.body)
   return res.json({
     message: userMessage.UPDATE_ME_SUCCESS,
     result: user
   })
 }
+export const getProfileController = async (req: Request<{username:string},any,getUserProfileReqParams>, res: Response, next: NextFunction) => {
+  const { username } = req.params
+  const user = await userService.getProfile(username)
+  return res.json({
+    message: userMessage.GET_USER_PROFILE_SUCCESS,
+    result: user
+  })
+}
+export const followController = async (req: Request<ParamsDictionary, any, followReqBody>, res: Response, next: NextFunction) => {
+  const { user_id } = req.decoded_authorization as Tokenpayload
+  const {followed_user_id } = req.body
+  const result = await userService.follow(user_id, followed_user_id)
+  return res.json(result)
+
+}
+
+
