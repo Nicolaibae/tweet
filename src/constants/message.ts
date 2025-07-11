@@ -50,6 +50,12 @@ export const userMessage = {
   UPDATE_ME_SUCCESS: "Update user profile success",
   GET_USER_PROFILE_SUCCESS: "Get user profile success",
   FOLLOW_SUCCESS: "Follow success",
-  INVALID_FOLLOWERD_USER_ID: "Invalid followed user id",
-  FOLLOWED:"FOLLOWED" 
+  INVALID_USER_ID: "Invalid  user id",
+  FOLLOWED:"FOLLOWED",
+  ALREADY_UNFOLLOWED:"ALREADY UNFOLLOWED" ,
+  UNFOLLOWED_SUCCESS: 'UNFOLLOWED SUCCESS',
+  USERNAME_INVALID:"USERNAME must be 4-15 character long and contain only letters, numbers, undercores, not only number",
+  USERNAME_EXISTED:"USERNAME EXISTED",
+  OLD_PASSWORD_NOT_MATCH:"OLD PASSWORD NOT MATCH",
+  CHANGE_PASSWORD_SUCCESS:"Change password success"
 } as const

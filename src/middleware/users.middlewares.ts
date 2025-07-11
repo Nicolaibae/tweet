@@ -5,7 +5,7 @@ import { validate } from "../utils/validation"
 import userService from "../services/users.service"
 import { userMessage } from "../constants/message"
 import databaseService from "../services/database.service"
-import { comparePassword } from "../utils/bycrypt"
+import { comparePassword, hassPassword } from "../utils/bycrypt"
 
 import { verifyToken } from "../utils/jwt"
 import { ErrorWithStatus } from "../model/errors"
@@ -15,6 +15,7 @@ import { NextFunction, Request,Response } from "express"
 import { ObjectId } from "mongodb"
 import { Tokenpayload } from "../model/request/user.request"
 import { UserVerifyStatus } from "../constants/enum"
+import { REGEX_USERNAME } from "../constants/regex"
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -135,6 +136,20 @@ const nameSchema : ParamSchema = {
       errorMessage: userMessage.DATE_OF_BIRTH_IS_ISO8601
     }
   }
+  const userIdSchema : ParamSchema = {
+      custom:{
+        options: async (value:string, { req }) => {
+          if(!ObjectId.isValid(value)){
+            throw new ErrorWithStatus({message:userMessage.INVALID_USER_ID,status:httpStatus.not_found})
+          }
+          const followed_user = await databaseService.users.findOne({ _id: new ObjectId(value) })
+          if(followed_user === null) {
+            throw new ErrorWithStatus({message:userMessage.USER_NOT_FOUND,status:httpStatus.not_found})
+          }
+      
+        }
+      }
+    }
 export const loginValidator = validate(checkSchema({
   email: {
     notEmpty: {
@@ -437,12 +452,18 @@ export const updateMeValidator = validate(checkSchema({
       errorMessage: userMessage.USERNAME_MUST_BE_STRING 
     },
     trim: true,
-    isLength: {
-      options: {
-        min: 0, // không bắt buộc
-        max: 50
-      },
-      errorMessage: userMessage.USERNAME_LENGTH
+    custom:{
+     options: async (value, { req }) => {
+      if(!REGEX_USERNAME.test(value)){
+        throw Error(userMessage.USERNAME_INVALID)
+      }
+      const user = await databaseService.users.findOne({username:value})
+      // nếu tồn tại user name trong DB k cho phép update
+      if(user){
+        throw Error(userMessage.USERNAME_EXISTED)
+      }
+     }
+     
     }
 
    },
@@ -482,19 +503,37 @@ export const updateMeValidator = validate(checkSchema({
   
 }, ["body"]))
 export const followValidator = validate(checkSchema({
-    followed_user_id: {
-      custom:{
-        options: async (value:string, { req }) => {
-          if(!ObjectId.isValid(value)){
-            throw new ErrorWithStatus({message:userMessage.INVALID_FOLLOWERD_USER_ID,status:httpStatus.not_found})
+    followed_user_id: userIdSchema
+}))
+export const unfollowValidator = validate(checkSchema({
+  user_id:userIdSchema
+},['params']))
+export const changePasswordValidator = validate(checkSchema({
+  old_password:{
+    ...passwordSchema,
+    custom:{
+      options:async (value, { req }) => {
+        const {user_id} = (req as Request).decoded_authorization as Tokenpayload
+        const user = await databaseService.users.findOne({_id: new ObjectId(user_id)})
+          if(!user){
+             throw new ErrorWithStatus({
+              message: userMessage.USER_NOT_FOUND,
+              status: httpStatus.not_found
+            })
           }
-          const followed_user = await databaseService.users.findOne({ _id: new ObjectId(value) })
-          if(followed_user === null) {
-            throw new ErrorWithStatus({message:userMessage.USER_NOT_FOUND,status:httpStatus.not_found})
+          const {password} = user
+          const isMatch = await hassPassword(value) === password
+          if(!isMatch){
+             throw new ErrorWithStatus({
+              message: userMessage.OLD_PASSWORD_NOT_MATCH,
+              status: httpStatus.UNAUTHORIZED
+            })
           }
-      
-        
-        }
       }
     }
-}))
+   
+  },
+  new_password: passwordSchema,
+  confirm_new_password: confirm_password_Schema
+})
+)

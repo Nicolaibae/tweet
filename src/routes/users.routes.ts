@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { emailverifyController, followController, forgotPasswordController, GetMeController, getProfileController, loginController, logoutController, registerController, resendVerifyEmailController, resetPasswordController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
-import { accessTokenValidator, EmailverifyTokenValidator, followValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, updateMeValidator, verifiedUserValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
+import { changePasswordController, emailverifyController, followController, forgotPasswordController, GetMeController, getProfileController, loginController, logoutController, registerController, resendVerifyEmailController, resetPasswordController, unfollowController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
+import { accessTokenValidator, changePasswordValidator, EmailverifyTokenValidator, followValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, unfollowValidator, updateMeValidator, verifiedUserValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
 import { wrapRequestHandler } from "../utils/handler";
 import { filterMiddleware } from "../middleware/common.middleware";
 import { updateMeReqBody } from "../model/request/user.request";
@@ -96,6 +96,13 @@ usersRouter.get("/:username",wrapRequestHandler(getProfileController))
  * 
  */
 usersRouter.post("/follow", accessTokenValidator,verifiedUserValidator,followValidator, wrapRequestHandler(followController))
+/**
+ *  delete follow user  
+ *  
+ */
+usersRouter.delete("/follow/:user_id", accessTokenValidator,verifiedUserValidator,unfollowValidator, wrapRequestHandler(unfollowController))
+
+usersRouter.put("/change-password", accessTokenValidator,verifiedUserValidator,changePasswordValidator, wrapRequestHandler(changePasswordController))
 
 
 
