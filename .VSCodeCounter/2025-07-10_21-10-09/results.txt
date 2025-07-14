@@ -1,0 +1,68 @@
+Date : 2025-07-10 21:10:09
+Directory : c:\tweet\tweet
+Total : 27 files,  5431 codes, 89 comments, 127 blanks, all 5647 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          3 |      4,115 |          0 |          3 |      4,118 |
+| TypeScript         |         21 |      1,254 |         88 |        121 |      1,463 |
+| JavaScript         |          1 |         34 |          0 |          2 |         36 |
+| JSON with Comments |          1 |         14 |          0 |          1 |         15 |
+| Properties         |          1 |         14 |          1 |          0 |         15 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                    | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                       |         27 |      5,431 |         89 |        127 |      5,647 |
+| . (Files)                                               |          6 |      4,177 |          1 |          6 |      4,184 |
+| src                                                     |         21 |      1,254 |         88 |        121 |      1,463 |
+| src (Files)                                             |          2 |         24 |          0 |         11 |         35 |
+| src\constants                                           |          3 |         79 |          0 |          2 |         81 |
+| src\controllers                                         |          1 |        114 |          2 |         16 |        132 |
+| src\middleware                                          |          3 |        488 |          2 |         37 |        527 |
+| src\model                                               |          5 |        166 |          4 |         11 |        181 |
+| src\model (Files)                                       |          1 |         21 |          4 |          3 |         28 |
+| src\model\request                                       |          1 |         51 |          0 |          2 |         53 |
+| src\model\schemas                                       |          3 |         94 |          0 |          6 |        100 |
+| src\routes                                              |          1 |         20 |         75 |          7 |        102 |
+| src\services                                            |          2 |        293 |          3 |         20 |        316 |
+| src\utils                                               |          4 |         70 |          2 |         17 |         89 |
++---------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                | language           | code       | comment    | blank      | total      |
++---------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\tweet\tweet\.env                                     | Properties         |         14 |          1 |          0 |         15 |
+| c:\tweet\tweet\eslint.config.mjs                        | JavaScript         |         34 |          0 |          2 |         36 |
+| c:\tweet\tweet\nodemon.json                             | JSON               |          6 |          0 |          1 |          7 |
+| c:\tweet\tweet\package-lock.json                        | JSON               |      4,072 |          0 |          1 |      4,073 |
+| c:\tweet\tweet\package.json                             | JSON               |         37 |          0 |          1 |         38 |
+| c:\tweet\tweet\src\constants\enum.ts                    | TypeScript         |         11 |          0 |          0 |         11 |
+| c:\tweet\tweet\src\constants\httpStatus.ts              | TypeScript         |         13 |          0 |          2 |         15 |
+| c:\tweet\tweet\src\constants\message.ts                 | TypeScript         |         55 |          0 |          0 |         55 |
+| c:\tweet\tweet\src\controllers\users.controller.ts      | TypeScript         |        114 |          2 |         16 |        132 |
+| c:\tweet\tweet\src\index.ts                             | TypeScript         |         13 |          0 |         11 |         24 |
+| c:\tweet\tweet\src\middleware\common.middleware.ts      | TypeScript         |          7 |          0 |          1 |          8 |
+| c:\tweet\tweet\src\middleware\error.middleware.ts       | TypeScript         |         15 |          0 |          4 |         19 |
+| c:\tweet\tweet\src\middleware\users.middlewares.ts      | TypeScript         |        466 |          2 |         32 |        500 |
+| c:\tweet\tweet\src\model\errors.ts                      | TypeScript         |         21 |          4 |          3 |         28 |
+| c:\tweet\tweet\src\model\request\user.request.ts        | TypeScript         |         51 |          0 |          2 |         53 |
+| c:\tweet\tweet\src\model\schemas\Follower.schema.ts     | TypeScript         |         19 |          0 |          1 |         20 |
+| c:\tweet\tweet\src\model\schemas\RefreshToken.schema.ts | TypeScript         |         19 |          0 |          1 |         20 |
+| c:\tweet\tweet\src\model\schemas\User.schema.ts         | TypeScript         |         56 |          0 |          4 |         60 |
+| c:\tweet\tweet\src\routes\users.routes.ts               | TypeScript         |         20 |         75 |          7 |        102 |
+| c:\tweet\tweet\src\services\database.service.ts         | TypeScript         |         35 |          1 |          8 |         44 |
+| c:\tweet\tweet\src\services\users.service.ts            | TypeScript         |        258 |          2 |         12 |        272 |
+| c:\tweet\tweet\src\type.d.ts                            | TypeScript         |         11 |          0 |          0 |         11 |
+| c:\tweet\tweet\src\utils\bycrypt.ts                     | TypeScript         |          8 |          0 |          4 |         12 |
+| c:\tweet\tweet\src\utils\handler.ts                     | TypeScript         |         10 |          0 |          0 |         10 |
+| c:\tweet\tweet\src\utils\jwt.ts                         | TypeScript         |         28 |          0 |          6 |         34 |
+| c:\tweet\tweet\src\utils\validation.ts                  | TypeScript         |         24 |          2 |          7 |         33 |
+| c:\tweet\tweet\tsconfig.json                            | JSON with Comments |         14 |          0 |          1 |         15 |
+| Total                                                   |                    |      5,431 |         89 |        127 |      5,647 |
++---------------------------------------------------------+--------------------+------------+------------+------------+------------+
