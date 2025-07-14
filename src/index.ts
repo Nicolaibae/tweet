@@ -5,7 +5,7 @@ import usersRouter from "./routes/users.routes";
 import { defaultErrorHandler } from "./middleware/error.middleware";
 
 databaseService.connect()
-const port = 3003
+const port = 4000
 
 const app = express();
 app.use(express.json());

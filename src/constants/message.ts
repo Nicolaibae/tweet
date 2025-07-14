@@ -57,5 +57,6 @@ export const userMessage = {
   USERNAME_INVALID:"USERNAME must be 4-15 character long and contain only letters, numbers, undercores, not only number",
   USERNAME_EXISTED:"USERNAME EXISTED",
   OLD_PASSWORD_NOT_MATCH:"OLD PASSWORD NOT MATCH",
-  CHANGE_PASSWORD_SUCCESS:"Change password success"
+  CHANGE_PASSWORD_SUCCESS:"Change password success",
+  GMAIL_NOT_VERIFY:"GMAIL NOT VERIFY"
 } as const

@@ -9,6 +9,7 @@ const httpStatus={
   interval_server_error:500,
   UNAUTHORIZED:401,
   FORBIDDEN:403,
+  BAD_REQUEST:400
 
 }as const
 export default httpStatus

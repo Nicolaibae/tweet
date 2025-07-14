@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePasswordController, emailverifyController, followController, forgotPasswordController, GetMeController, getProfileController, loginController, logoutController, registerController, resendVerifyEmailController, resetPasswordController, unfollowController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
+import { changePasswordController, emailverifyController, followController, forgotPasswordController, GetMeController, getProfileController, loginController, logoutController, oauthController, registerController, resendVerifyEmailController, resetPasswordController, unfollowController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
 import { accessTokenValidator, changePasswordValidator, EmailverifyTokenValidator, followValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, unfollowValidator, updateMeValidator, verifiedUserValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
 import { wrapRequestHandler } from "../utils/handler";
 import { filterMiddleware } from "../middleware/common.middleware";
@@ -15,6 +15,14 @@ const usersRouter = Router()
  */
 
 usersRouter.post("/login", loginValidator, wrapRequestHandler(loginController))
+/** Oauth with google
+ * path: /oauth/google
+ * method: get
+ * body: {code:string}
+ * response: {message:string,result:{access_token:string,refresh_token:string}}
+ */
+
+usersRouter.get("/oauth/google", wrapRequestHandler(oauthController))
 /** 
  * register 
  * path: /api/v1/users/register
