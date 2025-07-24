@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { followReqBody, forgotPasswordReqBody, getUserProfileReqParams, loginReqBody, logoutReqBody, registerReqBody, ResetPasswordReqBody, Tokenpayload, unfollowReqParam, updateMeReqBody, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
+import { followReqBody, forgotPasswordReqBody, getUserProfileReqParams, loginReqBody, logoutReqBody, RefreshTokenReqBody, registerReqBody, ResetPasswordReqBody, Tokenpayload, unfollowReqParam, updateMeReqBody, VerifyEmailReqBody, VerifyForgotPasswordReqBody } from "../model/request/user.request";
 import { ParamsDictionary } from "express-serve-static-core";
 import userService from "../services/users.service";
 import User from "../model/schemas/User.schema";
@@ -147,6 +147,15 @@ export const changePasswordController = async(req: Request<unfollowReqParam>, re
   const {password} =req.body
   const result = await userService.changePassword(user_id,password)
   return res.json(result)
+}
+export const refreshTokenController = async(req: Request<ParamsDictionary, any, RefreshTokenReqBody>, res: Response, next: NextFunction) => {
+   const { refresh_token } = req.body
+  const { user_id, verify, exp } = req.decoded_refresh_token as Tokenpayload
+  const result = await userService.refreshToken({ user_id, refresh_token, verify,exp})
+  return res.json({
+    message: userMessage.REFRESH_TOKEN_SUCCESS,
+    result
+  })
 }
 
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePasswordController, emailverifyController, followController, forgotPasswordController, GetMeController, getProfileController, loginController, logoutController, oauthController, registerController, resendVerifyEmailController, resetPasswordController, unfollowController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
+import { changePasswordController, emailverifyController, followController, forgotPasswordController, GetMeController, getProfileController, loginController, logoutController, oauthController, refreshTokenController, registerController, resendVerifyEmailController, resetPasswordController, unfollowController, updatemeController, verifyForgotPasswordController } from "../controllers/users.controller";
 import { accessTokenValidator, changePasswordValidator, EmailverifyTokenValidator, followValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, RegisterValidator, ResetPasswordValidator, unfollowValidator, updateMeValidator, verifiedUserValidator, VerifyforgotPasswordValidator } from "../middleware/users.middlewares";
 import { wrapRequestHandler } from "../utils/handler";
 import { filterMiddleware } from "../middleware/common.middleware";
@@ -37,6 +37,7 @@ usersRouter.post("/register", RegisterValidator, wrapRequestHandler(registerCont
  * method: POST 
  * 
  */
+
 usersRouter.post("/logout", accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
 /**
   * verify-email when client click on the link in the email
@@ -111,6 +112,13 @@ usersRouter.post("/follow", accessTokenValidator,verifiedUserValidator,followVal
 usersRouter.delete("/follow/:user_id", accessTokenValidator,verifiedUserValidator,unfollowValidator, wrapRequestHandler(unfollowController))
 
 usersRouter.put("/change-password", accessTokenValidator,verifiedUserValidator,changePasswordValidator, wrapRequestHandler(changePasswordController))
+/**
+ * Description. Refresh Token
+ * Path: /refresh-token
+ * Method: POST
+ * Body: { refresh_token: string }
+ */
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapRequestHandler(refreshTokenController))
 
 
 

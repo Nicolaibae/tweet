@@ -7,7 +7,7 @@ import fs from 'fs'
 import { isProduction } from "../constants/config"
 import { config } from "dotenv"
 import { MediaType } from "../constants/enum"
-import { Media } from "../model/orther"
+import { Media } from "../model/other"
 config()
 class MediasService {
   async UploadImage(req: Request) {
